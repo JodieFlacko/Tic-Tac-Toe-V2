@@ -20,22 +20,37 @@ const Game = (function(){
     })()
     
     function showBoard(){
-      console.log(board)
+      for(let i = 0; i<= 8; i++){
+        console.log(`${board[i].getValue()}`)
+      }
     }
 
-    return {showBoard}
+    function checkBoard(){
+      const updatedBoard = board.filter(cell => cell.getValue() != "")
+      if (updatedBoard.length === 9) return true
+    }
+
+    function markCell(rowIndex, columnIndex, mark){
+      // subtract one from indexes to access the right position
+      rowIndex -= 1
+      columnIndex -= 1
+      board[(rowIndex * 3) + columnIndex].setValue(mark)
+    }
+
+    function Cell(){
+      let value = ""
+      function getValue(){
+        return value
+      }
+      function setValue(mark){
+        value = mark
+      }
+      return {getValue, setValue, markCell}
+    }
+
+
+    return {showBoard, checkBoard, markCell}
   }())
-
-  function Cell(){
-    value = ""
-    function getValue(){
-      return value
-    }
-    function setValue(mark){
-      value = mark
-    }
-    return {getValue, setValue}
-  }
 
   const Players = (function(){
     function createPlayer(name, mark){
@@ -62,11 +77,37 @@ const Game = (function(){
   }())
 
   const consoleController = (function(){
+    const playerOne = Players.one
+    const playerTwo = Players.two
+    let activePlayer = playerOne
+    let gameOver = false
+
     function displayPlayersData(){
-      console.log(`First Player \n\tName: ${Players.one.getName()}\n\tScore: ${Players.one.getScore()}\nSecond Player\n\tName: ${Players.two.getName()}\n\tScore: ${Players.two.getScore()}\n`)
+      console.log(`First Player \n\tName: ${playerOne.getName()}\n\tScore: ${playerOne.getScore()}\nSecond Player\n\tName: ${playerTwo.getName()}\n\tScore: ${playerTwo.getScore()}\n`)
     }
 
-    // function that allow the user to choose the cell to mark
+    function startRound(){
+      console.log(`${activePlayer.getName()}'s turn:\n`);
+      // function that allow the user to choose the cell to mark
+      (function promptCellToMark(){
+        const rowIndex = prompt("Enter a valid row: ")
+        const columnIndex = prompt("Enter a valid column: ")
+        const mark = activePlayer.getMark()
+
+        Gameboard.markCell(rowIndex, columnIndex, mark)
+      })();
+
+      (function switchRound(){
+        activePlayer = activePlayer === playerOne ? playerTwo : playerOne
+      })();
+      Gameboard.showBoard();
+      gameOver = Gameboard.checkBoard();
+    }
+    
+    while(!gameOver){
+      startRound()
+    }
+
     return {displayPlayersData}
   }())
 
