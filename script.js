@@ -30,11 +30,8 @@ const Game = (function(){
       if (updatedBoard.length === 9) return true
     }
 
-    function markCell(rowIndex, columnIndex, mark){
-      // subtract one from indexes to access the right position
-      rowIndex -= 1
-      columnIndex -= 1
-      board[(rowIndex * 3) + columnIndex].setValue(mark)
+    function markCell(boardIndex, mark){
+      board[boardIndex].setValue(mark)
     }
 
     function Cell(){
@@ -68,8 +65,10 @@ const Game = (function(){
       return prompt(`Enter ${player} player Name: `,"")
     }
 
-    const nameOne = promptName("first")
-    const nameTwo = promptName("second")
+    // const nameOne = promptName("first")
+    // const nameTwo = promptName("second")
+    const nameOne = 'first'
+    const nameTwo = 'second'
     const one = createPlayer(nameOne, "x")
     const two = createPlayer(nameTwo, "o")
     
@@ -83,30 +82,50 @@ const Game = (function(){
     let gameOver = false
 
     function displayPlayersData(){
-      console.log(`First Player \n\tName: ${playerOne.getName()}\n\tScore: ${playerOne.getScore()}\nSecond Player\n\tName: ${playerTwo.getName()}\n\tScore: ${playerTwo.getScore()}\n`)
+      console.log(`First Player \n\tName: ${playerOne.getName()}\n\tScore: ${playerOne.getScore()}\n\tMark: ${playerOne.getMark()}\nSecond Player\n\tName: ${playerTwo.getName()}\n\tScore: ${playerTwo.getScore()}\n\tMark: ${playerTwo.getMark()}\n`)
     }
 
-    function startRound(){
-      console.log(`${activePlayer.getName()}'s turn:\n`);
+    function startRound(message){
+      console.log(message);
       // function that allow the user to choose the cell to mark
       (function promptCellToMark(){
-        const rowIndex = prompt("Enter a valid row: ")
-        const columnIndex = prompt("Enter a valid column: ")
+        // const rowIndex = prompt("Enter a valid row: ")
+        // const columnIndex = promptF("Enter a valid column: ")
+        let rowIndex = '1'
+        let columnIndex = '1'
+        // check for input validity
+        checkPositionInputValidity(rowIndex, columnIndex)
+
+        // subtract one from indexes to access the right position
+        rowIndex -= 1
+        columnIndex -= 1
+
+        const boardIndex = (rowIndex * 3) + columnIndex
         const mark = activePlayer.getMark()
 
-        Gameboard.markCell(rowIndex, columnIndex, mark)
+        Gameboard.markCell(boardIndex, mark)
+
       })();
 
       (function switchRound(){
         activePlayer = activePlayer === playerOne ? playerTwo : playerOne
       })();
+
+      function checkPositionInputValidity(inputX, inputY){
+        if(inputX > 3 || inputX < 1 && inputY > 3 || inputY < 1) {
+          startRound('Invalid Input: enter a value greater then 0 and smaller then 4')
+          return
+        }
+      }
       Gameboard.showBoard();
       gameOver = Gameboard.checkBoard();
     }
     
-    while(!gameOver){
-      startRound()
-    }
+    // while(!gameOver){
+    //   startRound()
+    // }
+
+    startRound()
 
     return {displayPlayersData}
   }())
