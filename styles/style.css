@@ -16,8 +16,40 @@
 
 body {
   font-family:  'airbnbcereal_regular','Times New Roman', Times, serif;
+  width: 100vw;
+  height: 100vh;
+}
+
+.game-container{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-grid, .cell {
+  outline: 1px solid black;
+}
+
+.game-grid{
+  margin: 0 auto;
+  width: 400px;
+  height: 400px;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.game-grid .grid-row{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .game-grid .cell {
+  width: 100%;
+  height: 100%;
   display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

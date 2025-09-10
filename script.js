@@ -72,116 +72,106 @@ const Game = (function startGame(){
   }());
 
   const consoleController = (function(){
-    function startMatch(){
       const playerOne = Players.one;
       const playerTwo = Players.two;
       let activePlayer = playerOne;
-      const activePlayerMark = activePlayer.getMark();
       let roundStatus = "ongoing";
       let gameStatus = "ongoing";
       let ties = 0;
       let playedRounds = 0;
-      function startRound(){
-        while(roundStatus === 'ongoing'){
-          (function playTurn(message){
-            console.log(message);
-            // function that allow the user to choose the cell to activePlayerMark
-            (function promptCellToMark(){
-              // const rowIndex = prompt("Enter a valid row: ")
-              // const columnIndex = prompt("Enter a valid column: ")
-              // test
-              let rowIndex = '1';
-              let columnIndex = '1';
-              // check for input validity
-              (function checkPositionInputValidity(inputX, inputY){
-                if(inputX > 3 || inputX < 1 && inputY > 3 || inputY < 1) {
-                  playTurn('Invalid Input: enter a value greater then 0 and smaller then 4')
-                  return
-                }
-              })();
-
-              // subtract one from indexes to access the right position
-              rowIndex -= 1;
-              columnIndex -= 1;
-              const boardIndex = (rowIndex * 3) + columnIndex;
-
-              Gameboard.markCell(boardIndex, activePlayerMark);
-
-              //test
-              Gameboard.markCell(1, activePlayerMark);
-              Gameboard.markCell(2, activePlayerMark);
-
-            })();
-
-            (function updateRoundStatus(){
-              const winningSeries = [
-                [0, 1, 2],  // top row
-                [3, 4, 5],  // middle row
-                [6, 7, 8],  // bottom row
-                [0, 3, 6],  // left column
-                [1, 4, 7],  // middle column
-                [2, 5, 8],  // right column
-                [0, 4, 8],  // diagonal (\)
-                [2, 4, 6]   // diagonal (/)
-              ];
-
-              const board = Gameboard.getBoard();
-              (function checkWin(){
-                winningSeries.forEach(array => {
-                  let count = 0
-                  array.forEach(index =>{
-                    if(board[index] == activePlayerMark){
-                      count++;
-                      if (count === 3) {
-                        roundStatus = "win"
-                        activePlayer.increaseScore();
-                        return;
-                      }
-                    }
-                  })
-                });
-              })();
-
-              (function checkTie(){
-                const markedBoard = board.filter(cell => cell != "")
-                if (markedBoard.length === 9) {
-                  roundStatus = "tie";
-                  ties++;
-                  return;
-                }
-              })();
-            })();  
-
-            DOMController.displayBoard();  
-            logUpdate(roundStatus);
-            displayScore();
+      function playTurn(index){
+        const activePlayerMark = activePlayer.getMark();
+        (function markCell(){
+          // test
+          // let rowIndex = '1';
+          // let columnIndex = '1';
+          // check for input validity
+          (function checkPositionInputValidity(){
+            const board = Gameboard.getBoard()
+            if(board[index] != "") {
+              alert('Position already taken. Choose another spot');
+              return;
+            }
           })();
-        };
 
-        // while loop stops, end round
-        (function endRound(){
+          Gameboard.markCell(index, activePlayerMark);
+
+          //test
+          // Gameboard.markCell(1, activePlayerMark);
+          // Gameboard.markCell(2, activePlayerMark);
+
+        })();
+
+        (function updateRoundStatus(){
+          const winningSeries = [
+            [0, 1, 2],  // top row
+            [3, 4, 5],  // middle row
+            [6, 7, 8],  // bottom row
+            [0, 3, 6],  // left column
+            [1, 4, 7],  // middle column
+            [2, 5, 8],  // right column
+            [0, 4, 8],  // diagonal (\)
+            [2, 4, 6]   // diagonal (/)
+          ];
+          const activePlayerMark = activePlayer.getMark();
+
+          const board = Gameboard.getBoard();
+          (function checkWin(){
+            winningSeries.forEach(array => {
+              let count = 0
+              array.forEach(index =>{
+                if(board[index] == activePlayerMark){
+                  count++;
+                  if (count === 3) {
+                    roundStatus = "win";
+                    activePlayer.increaseScore();
+                    return;
+                  }
+                }
+              })
+            });
+          })();
+
+          (function checkTie(){
+            const markedBoard = board.filter(cell => cell != "")
+            if (markedBoard.length === 9) {
+              roundStatus = "tie";
+              ties++;
+              return;
+            }
+          })();
+        })();  
+        
+        // end round
+        if(roundStatus !== "ongoing") {
+          endRound();
+          updateGameStatus();
+        }
+        function endRound(){
+          playedRounds++;
           Gameboard.clearBoard();
           roundStatus = "ongoing";
-        })();
-        
-        // update played rounds
-        playedRounds++;
-
-        //condition to end match
-        (function updateGameStatus(){
+        };
+      
+        function updateGameStatus(){
           const activePlayerScore = activePlayer.getScore();
           if(activePlayerScore === 5) {
             gameStatus = "end";
             logUpdate(gameStatus);
           }
-        })();
+        };
+
+        // condition to end match
         if(gameStatus === "end") return;
         //start another round if condition is not fulfilled
         (function switchTurn(){
               activePlayer = activePlayer === playerOne ? playerTwo : playerOne
         })();
-        startRound();
-      }
+
+        DOMController.displayBoard();  
+        logUpdate(roundStatus);
+        displayScore();
+      };
 
       //helper functions
       function displayScore(){
@@ -201,11 +191,8 @@ const Game = (function startGame(){
         }
       };
 
-      startRound();
-    };
-
   //"consoleController" module ending
-  return {startMatch}
+  return {playTurn}
   }());
 
   const DOMController = (function (){
@@ -217,11 +204,20 @@ const Game = (function startGame(){
         DOMGrid[i].textContent = board[i];
       }
     };
+
+    (function eventHandler(){
+      const grid = document.querySelector(".game-grid");
+      grid.addEventListener("click", markCell);
+    })();
+
+    function markCell(event){
+      const index = event.target.dataset.index;
+      consoleController.playTurn(index);
+    };
     
     return {displayBoard}
   })();
 
-  consoleController.startMatch();
   // "Game" module ending
   return {startGame}
 })();
