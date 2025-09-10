@@ -17,3 +17,7 @@
 body {
   font-family:  'airbnbcereal_regular','Times New Roman', Times, serif;
 }
+
+.game-grid .cell {
+  display: inline-block;
+}

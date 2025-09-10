@@ -1,4 +1,4 @@
-const Game = (function(){  
+const Game = (function startGame(){  
   const Gameboard = (function (){
     let board = [
     ];
@@ -88,7 +88,7 @@ const Game = (function(){
             // function that allow the user to choose the cell to activePlayerMark
             (function promptCellToMark(){
               // const rowIndex = prompt("Enter a valid row: ")
-              // const columnIndex = promptF("Enter a valid column: ")
+              // const columnIndex = prompt("Enter a valid column: ")
               // test
               let rowIndex = '1';
               let columnIndex = '1';
@@ -152,11 +152,12 @@ const Game = (function(){
               })();
             })();  
 
-            Gameboard.showBoard();
+            DOMController.displayBoard();  
             logUpdate(roundStatus);
             displayScore();
           })();
         };
+
         // while loop stops, end round
         (function endRound(){
           Gameboard.clearBoard();
@@ -174,7 +175,6 @@ const Game = (function(){
             logUpdate(gameStatus);
           }
         })();
-
         if(gameStatus === "end") return;
         //start another round if condition is not fulfilled
         (function switchTurn(){
@@ -182,7 +182,7 @@ const Game = (function(){
         })();
         startRound();
       }
-      
+
       //helper functions
       function displayScore(){
         console.log(`First Player \n\tName: ${playerOne.getName()}\n\tScore: ${playerOne.getScore()}\n\tMark: ${playerOne.getMark()}\nSecond Player\n\tName: ${playerTwo.getName()}\n\tScore: ${playerTwo.getScore()}\n\tMark: ${playerTwo.getMark()}\n\t\nTies: ${ties}`)
@@ -208,7 +208,20 @@ const Game = (function(){
   return {startMatch}
   }());
 
+  const DOMController = (function (){
+    const DOMGrid = document.querySelectorAll(".cell");
+    
+    function displayBoard(){
+      const board = Gameboard.getBoard();
+      for(let i = 0; i < 9; i++){
+        DOMGrid[i].textContent = board[i];
+      }
+    };
+    
+    return {displayBoard}
+  })();
 
   consoleController.startMatch();
   // "Game" module ending
+  return {startGame}
 })();
