@@ -80,20 +80,12 @@ const Game = (function startGame(){
       let ties = 0;
       let playedRounds = 0;
       function playTurn(index){
-        const activePlayerMark = activePlayer.getMark();
         (function markCell(){
           // test
           // let rowIndex = '1';
           // let columnIndex = '1';
           // check for input validity
-          (function checkPositionInputValidity(){
-            const board = Gameboard.getBoard()
-            if(board[index] != "") {
-              alert('Position already taken. Choose another spot');
-              return;
-            }
-          })();
-
+          const activePlayerMark = activePlayer.getMark();
           Gameboard.markCell(index, activePlayerMark);
 
           //test
@@ -206,12 +198,19 @@ const Game = (function startGame(){
     };
 
     (function eventHandler(){
+      const gameContainer = document.querySelector(".game-container");
+      gameContainer.style.display = "flex";
       const grid = document.querySelector(".game-grid");
       grid.addEventListener("click", markCell);
     })();
 
     function markCell(event){
       const index = event.target.dataset.index;
+      const board = Gameboard.getBoard()
+      if(board[index] != "") {
+        alert('Position already taken. Choose another spot');
+        return;
+      }
       consoleController.playTurn(index);
     };
     
