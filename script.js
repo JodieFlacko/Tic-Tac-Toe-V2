@@ -36,68 +36,74 @@ const Game = (function(){
     }
 
 
-    return {showBoard, getBoard, markCell}
+    return {showBoard, getBoard, markCell};
   }())
 
   const Players = (function(){
     function createPlayer(name, mark){
-      let score = 0
+      let score = 0;
 
-      const increaseScore = () => { score++ }
-      const getName  = () => { return name }
-      const getMark = () => { return mark }
-      const getScore = () => { return score }
+      const increaseScore = () => { score++ };
+      const getName  = () => { return name };
+      const getMark = () => { return mark };
+      const getScore = () => { return score };
 
-      return {increaseScore, getName, getMark, getScore}
-    }
+      return {increaseScore, getName, getMark, getScore};
+    };
 
     function promptName(player){
-      return prompt(`Enter ${player} player Name: `,"")
-    }
+      return prompt(`Enter ${player} player Name: `,"");
+    };
 
     // const nameOne = promptName("first")
     // const nameTwo = promptName("second")
-    const nameOne = 'first'
-    const nameTwo = 'second'
-    const one = createPlayer(nameOne, "x")
-    const two = createPlayer(nameTwo, "o")
+    const nameOne = 'first';
+    const nameTwo = 'second';
+    const one = createPlayer(nameOne, "x");
+    const two = createPlayer(nameTwo, "o");
     
-    return {one, two}
+    return {one, two};
   }())
 
   const consoleController = (function(){
-    const playerOne = Players.one
-    const playerTwo = Players.two
-    let activePlayer = playerOne
-    const mark = activePlayer.getMark()
-    let gameStatus = "ongoing"
+    const playerOne = Players.one;
+    const playerTwo = Players.two;
+    let activePlayer = playerOne;
+    const activePlayerMark = activePlayer.getMark();
+    let gameStatus = "ongoing";
+    let ties = 0
 
-    function displayPlayersData(){
-      console.log(`First Player \n\tName: ${playerOne.getName()}\n\tScore: ${playerOne.getScore()}\n\tMark: ${playerOne.getMark()}\nSecond Player\n\tName: ${playerTwo.getName()}\n\tScore: ${playerTwo.getScore()}\n\tMark: ${playerTwo.getMark()}\n`)
-    }
+    function displayScore(){
+      console.log(`First Player \n\tName: ${playerOne.getName()}\n\tScore: ${playerOne.getScore()}\n\tMark: ${playerOne.getMark()}\nSecond Player\n\tName: ${playerTwo.getName()}\n\tScore: ${playerTwo.getScore()}\n\tMark: ${playerTwo.getMark()}\n\t\nTies: ${ties}`)
+    };
 
     function playTurn(message){
       console.log(message);
-      // function that allow the user to choose the cell to mark
+      // function that allow the user to choose the cell to activePlayerMark
       (function promptCellToMark(){
         // const rowIndex = prompt("Enter a valid row: ")
         // const columnIndex = promptF("Enter a valid column: ")
-        let rowIndex = '1'
-        let columnIndex = '1'
+        // test
+        let rowIndex = '1';
+        let columnIndex = '1';
         // check for input validity
-        checkPositionInputValidity(rowIndex, columnIndex)
+        (function checkPositionInputValidity(inputX, inputY){
+          if(inputX > 3 || inputX < 1 && inputY > 3 || inputY < 1) {
+            playTurn('Invalid Input: enter a value greater then 0 and smaller then 4')
+            return
+          }
+        })();
 
         // subtract one from indexes to access the right position
-        rowIndex -= 1
-        columnIndex -= 1
+        rowIndex -= 1;
+        columnIndex -= 1;
+        const boardIndex = (rowIndex * 3) + columnIndex;
 
-        const boardIndex = (rowIndex * 3) + columnIndex
-
-        Gameboard.markCell(boardIndex, mark)
+        Gameboard.markCell(boardIndex, activePlayerMark);
 
         //test
-        Gameboard.markCell(1, mark)
-        Gameboard.markCell(2, mark)
+        Gameboard.markCell(1, activePlayerMark);
+        Gameboard.markCell(2, activePlayerMark);
 
       })();
 
@@ -118,7 +124,7 @@ const Game = (function(){
           winningSeries.forEach(array => {
             let count = 0
             array.forEach(index =>{
-              if(board[index] == mark){
+              if(board[index] == activePlayerMark){
                 count++;
                 if (count === 3) gameStatus = "win"
                 return
@@ -136,39 +142,38 @@ const Game = (function(){
         })();
       })();
 
-      (function switchTurn(){
-        activePlayer = activePlayer === playerOne ? playerTwo : playerOne
-      })();
-
-      function checkPositionInputValidity(inputX, inputY){
-        if(inputX > 3 || inputX < 1 && inputY > 3 || inputY < 1) {
-          playTurn('Invalid Input: enter a value greater then 0 and smaller then 4')
-          return
-        }
-      }
       Gameboard.showBoard();
-    }
+    };
+
+    function switchTurn(){
+      activePlayer = activePlayer === playerOne ? playerTwo : playerOne
+    };
     
     function checkGameStatus(){
       switch (gameStatus){
         case "ongoing":
-          playTurn()
-          return;
+          playTurn();
+          break;
         case "win":
           console.log("We have a winner!")
-          return;
+          activePlayer.increaseScore();
+          displayScore();
+          switchTurn()
+          break;
         case "tie":
           console.log("we have a Tie!")
-          return;
+          ties++;
+          displayScore();
+          switchTurn()
+          break;
       }
     };
 
-
-    playTurn()
-    checkGameStatus()
-    return {displayPlayersData}
-  }())
+    playTurn();
+    checkGameStatus();
+    return {displayScore};
+  }());
 
   // "Game" module ending
-  return {displayData: consoleController.displayPlayersData, showBoard: Gameboard.showBoard}
-})()
+  return {displayData: consoleController.displayScore};
+})();
