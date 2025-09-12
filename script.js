@@ -1,4 +1,4 @@
-const Game = (function startGame(){  
+const Game = (function(){  
   const Gameboard = (function (){
     let board = [
     ];
@@ -57,12 +57,6 @@ const Game = (function startGame(){
       return {increaseScore, getName, getMark, getScore};
     };
 
-    function promptName(player){
-      return prompt(`Enter ${player} player Name: `,"");
-    };
-
-    // const nameOne = promptName("first")
-    // const nameTwo = promptName("second")
     const nameOne = 'first';
     const nameTwo = 'second';
     const one = createPlayer(nameOne, "x");
@@ -81,17 +75,8 @@ const Game = (function startGame(){
       let playedRounds = 0;
       function playTurn(index){
         (function markCell(){
-          // test
-          // let rowIndex = '1';
-          // let columnIndex = '1';
-          // check for input validity
           const activePlayerMark = activePlayer.getMark();
           Gameboard.markCell(index, activePlayerMark);
-
-          //test
-          // Gameboard.markCell(1, activePlayerMark);
-          // Gameboard.markCell(2, activePlayerMark);
-
         })();
 
         (function updateRoundStatus(){
@@ -187,36 +172,69 @@ const Game = (function startGame(){
   return {playTurn}
   }());
 
-  const DOMController = (function (){
-    const DOMGrid = document.querySelectorAll(".cell");
-    
-    function displayBoard(){
-      const board = Gameboard.getBoard();
-      for(let i = 0; i < 9; i++){
-        DOMGrid[i].textContent = board[i];
-      }
-    };
+  // "Game" module ending
+})();
 
-    (function eventHandler(){
-      const gameContainer = document.querySelector(".game-container");
-      gameContainer.style.display = "flex";
-      const grid = document.querySelector(".game-grid");
-      grid.addEventListener("click", markCell);
-    })();
+const DOMController = (function (){
+  const DOMGrid = document.querySelectorAll(".cell");
+  
+  function displayBoard(){
+    const board = Gameboard.getBoard();
+    for(let i = 0; i < 9; i++){
+      DOMGrid[i].textContent = board[i];
+    }
+  };
 
-    function markCell(event){
-      const index = event.target.dataset.index;
-      const board = Gameboard.getBoard()
-      if(board[index] != "") {
-        alert('Position already taken. Choose another spot');
-        return;
-      }
-      consoleController.playTurn(index);
-    };
-    
-    return {displayBoard}
+  (function eventHandler(){
+    const gameContainer = document.querySelector(".game-container");
+    // gameContainer.style.display = "flex";
+    // later use this to show the container
+    const grid = document.querySelector(".game-grid");
+    grid.addEventListener("click", markCell);
   })();
 
-  // "Game" module ending
-  return {startGame}
+  function markCell(event){
+    const index = event.target.dataset.index;
+    const board = Gameboard.getBoard()
+    if(board[index] != "") {
+      alert('Position already taken. Choose another spot');
+      return;
+    }
+    consoleController.playTurn(index);
+  };
+  
+  return {displayBoard};
+})();
+
+const input = (function dialogHandler(){
+  const container = document.querySelector(".start-container");
+  const dialog = document.querySelector(".input-dialog");
+  const button = document.querySelector(".input-dialog button");
+  let data;
+  container.addEventListener("click", showInputForm);
+  button.addEventListener("submit", submitInput);
+
+  function showInputForm(){
+    //first hide the "start container"
+    container.style.display = "none";
+    //then show the dialog
+    dialog.showModal(); 
+  };
+
+  function submitInput(event){
+    event.preventDefault();
+    data = getFormData();
+    dialog.close();
+  }
+
+  function getFormData(){
+    const form = document.querySelector(".input-dialog form");
+    const formData = new FormData(form);
+
+    const data = Object.fromEntries(formData.entries());
+    return data;
+  }
+
+
+  return {data};
 })();

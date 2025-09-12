@@ -20,10 +20,20 @@ body {
   height: 100vh;
 }
 
+.start-container{
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding-top: 165px;
+}
+
+.input-dialog{
+  outline: 1px solid black;
+}
+
 .game-container{
   width: 100%;
   height: 100%;
-  display: hidden;
   justify-content: center;
   align-items: center;
 }

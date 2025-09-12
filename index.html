@@ -9,6 +9,26 @@
   <title>Tic-Tac-Toe</title>
 </head>
 <body>
+  <div class="start-container">
+    <div class="header">
+      <h1>Let's Play Tic-Tac-Toe!</h1>
+    </div>
+    <p>Press anywhere on the screen to start!</p>
+  </div>
+  <div class="input-container"> 
+    <dialog class="input-dialog">
+      <form action="#">
+        <label for="first-name">First Player Name
+          <input type="text" name="first-name" id="first-name">
+        </label>
+        <label for="mark">First Player Mark
+          <input type="radio" name="first-player-mark" value="x">
+          <input type="radio" name="first-player-mark" value="o">
+        </label>
+        <button type="button">CONFIRM</button>
+      </form>
+    </dialog>
+  </div>
   <div class="game-container" hidden>
     <div class="game-grid">
       <div class="grid-row" data-index="0">
