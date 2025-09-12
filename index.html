@@ -16,16 +16,24 @@
     <p>Press anywhere on the screen to start!</p>
   </div>
   <div class="input-container"> 
-    <dialog class="input-dialog">
+    <dialog class="input-dialog-player-one">
       <form action="#">
-        <label for="first-name">First Player Name
-          <input type="text" name="first-name" id="first-name">
+        <label for="first-player-name">First Player Name
+          <input type="text" name="name" id="second-player-name">
         </label>
         <label for="mark">First Player Mark
-          <input type="radio" name="first-player-mark" value="x">
-          <input type="radio" name="first-player-mark" value="o">
+          <input type="radio" name="mark" value="x">
+          <input type="radio" name="mark" value="o">
         </label>
-        <button type="button">CONFIRM</button>
+        <button type="submit">CONFIRM</button>
+      </form>
+    </dialog>
+    <dialog class="input-dialog-player-two">
+      <form action="#">
+        <label for="second-player-name">Second Player Name
+          <input type="text" name="name" id="second-player-name">
+        </label>
+        <button type="submit">CONFIRM</button>
       </form>
     </dialog>
   </div>
